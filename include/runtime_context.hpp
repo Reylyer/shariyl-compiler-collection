@@ -10,7 +10,7 @@
 #include "lookup.hpp"
 #include "expression.hpp"
 
-namespace stork {
+namespace algoritmik {
 	class runtime_context {
 	private:
 		std::vector<function> _functions;

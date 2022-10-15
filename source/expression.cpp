@@ -8,7 +8,7 @@
 #include <compiler_context.hpp>
 #include <cassert>
 
-namespace stork {
+namespace algoritmik {
 	namespace {
 		template<class V, typename T>
 		struct is_boxed {

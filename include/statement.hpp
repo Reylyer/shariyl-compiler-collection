@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "expression.hpp"
 
-namespace stork {
+namespace algoritmik {
 	enum struct flow_type{
 		f_normal,
 		f_break,

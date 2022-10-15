@@ -2,7 +2,7 @@
 #include <errors.hpp>
 #include <compiler_context.hpp>
 
-namespace stork {
+namespace algoritmik {
 	namespace {
 		bool is_convertible(type_handle type_from, bool lvalue_from, type_handle type_to, bool lvalue_to) {
 			if (type_to == type_registry::get_void_handle()) {

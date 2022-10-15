@@ -9,7 +9,7 @@
 
 #include "tokens.hpp"
 
-namespace stork {
+namespace algoritmik {
 	class push_back_stream;
 
 	class tokens_iterator {

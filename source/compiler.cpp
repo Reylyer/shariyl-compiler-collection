@@ -7,7 +7,7 @@
 #include <runtime_context.hpp>
 #include <push_back_stream.hpp>
 
-namespace stork {
+namespace algoritmik {
 	namespace {
 		struct possible_flow {
 			size_t break_level;
@@ -32,9 +32,9 @@ namespace stork {
 				[](const auto& v) {
 					if constexpr (std::is_same_v<decltype(v), const reserved_token&>) {
 						switch (v) {
-							case reserved_token::kw_number:
-							case reserved_token::kw_string:
-							case reserved_token::kw_void:
+							// case reserved_token::kw_number:
+							// case reserved_token::kw_string:
+							// case reserved_token::kw_void:
 							case reserved_token::open_square:
 								return true;
 							default:
@@ -110,8 +110,8 @@ namespace stork {
 		statement_ptr compile_statement(compiler_context& ctx, tokens_iterator& it, possible_flow pf, bool in_switch) {
 			if (it->is_reserved_token()) {
 				switch (it->get_reserved_token()) {
-					case reserved_token::kw_for:
-						return compile_for_statement(ctx, it, pf.add_loop());
+					// case reserved_token::kw_for:
+					// 	return compile_for_statement(ctx, it, pf.add_loop());
 					case reserved_token::kw_while:
 						return compile_while_statement(ctx, it, pf.add_loop());
 					case reserved_token::kw_do:
@@ -120,10 +120,10 @@ namespace stork {
 						return compile_if_statement(ctx, it, pf);
 					case reserved_token::kw_switch:
 						return compile_switch_statement(ctx, it, pf.add_switch());
-					case reserved_token::kw_break:
-						return compile_break_statement(ctx, it, pf);
-					case reserved_token::kw_continue:
-						return compile_continue_statement(ctx, it, pf);
+					// case reserved_token::kw_break:
+					// 	return compile_break_statement(ctx, it, pf);
+					// case reserved_token::kw_continue:
+					// 	return compile_continue_statement(ctx, it, pf);
 					case reserved_token::kw_return:
 						return compile_return_statement(ctx, it, pf);
 					default:
@@ -308,7 +308,7 @@ namespace stork {
 				throw unexpected_syntax(it);
 			}
 			
-			parse_token_value(ctx, it, reserved_token::kw_break);
+			// parse_token_value(ctx, it, reserved_token::kw_break);
 			
 			double break_level;
 			
@@ -334,7 +334,7 @@ namespace stork {
 			if (!pf.can_continue) {
 				throw unexpected_syntax(it);
 			}
-			parse_token_value(ctx, it, reserved_token::kw_continue);
+			// parse_token_value(ctx, it, reserved_token::kw_continue);
 			parse_token_value(ctx, it, reserved_token::semicolon);
 			return create_continue_statement();
 		}

@@ -1,6 +1,6 @@
 #include <variable.hpp>
 
-namespace stork {
+namespace algoritmik {
 	namespace {
 		string from_std_string(std::string str) {
 			return std::make_shared<std::string>(std::move(str));

@@ -6,14 +6,14 @@
 #include <ostream>
 #include <variant>
 
-namespace stork {
+namespace algoritmik {
 	enum struct reserved_token {
 		inc,
 		dec,
-		
+		concat,
+
 		add,
 		sub,
-		concat,
 		mul,
 		div,
 		idiv,
@@ -69,6 +69,7 @@ namespace stork {
 		open_square,
 		close_square,
 		
+
 		kw_sizeof,
 		kw_tostring,
 		
@@ -81,6 +82,7 @@ namespace stork {
 		kw_default,
 
 		kw_for,
+		kw_traversal,
 		kw_while,
 		kw_do,
 
@@ -89,6 +91,12 @@ namespace stork {
 		kw_return,
 
 		kw_function,
+		kw_procedure,
+		kw_program,
+
+		kw_kamus,
+		kw_kamus_lokal,
+		kw_algoritma,
 		
 		kw_void,
 		kw_number,
@@ -148,7 +156,7 @@ namespace stork {
 }
 
 namespace std {
-	std::string to_string(stork::reserved_token t);
-	std::string to_string(const stork::token_value& t);}
+	std::string to_string(algoritmik::reserved_token t);
+	std::string to_string(const algoritmik::token_value& t);}
 
 #endif /* tokens_hpp */

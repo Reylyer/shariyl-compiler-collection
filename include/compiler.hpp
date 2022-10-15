@@ -8,7 +8,7 @@
 #include <vector>
 #include <functional>
 
-namespace stork {
+namespace algoritmik {
 	class compiler_context;
 	class tokens_iterator;
 	class runtime_context;

@@ -7,7 +7,7 @@
 
 #include "types.hpp"
 
-namespace stork {
+namespace algoritmik {
 
 	enum struct identifier_scope {
 		global_variable,

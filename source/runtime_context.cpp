@@ -1,7 +1,7 @@
 #include <runtime_context.hpp>
 #include <errors.hpp>
 
-namespace stork {
+namespace algoritmik {
 	runtime_context::runtime_context(
 		std::vector<expression<lvalue>::ptr> initializers,
 		std::vector<function> functions,

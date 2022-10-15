@@ -5,7 +5,7 @@
 #include <utility>
 #include <algorithm>
 
-namespace stork {
+namespace algoritmik {
 	template <typename Key, typename Value>
 	class lookup {
 	public:

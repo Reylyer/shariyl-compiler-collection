@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace stork {
+namespace algoritmik {
 	class runtime_context;
 	class tokens_iterator;
 	class compiler_context;

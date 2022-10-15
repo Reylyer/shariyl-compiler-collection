@@ -1,7 +1,7 @@
 #include <types.hpp>
 #include <cassert>
 
-namespace stork {
+namespace algoritmik {
 	bool type_registry::types_less::operator()(const type& t1, const type& t2) const {
 		const size_t idx1 = t1.index();
 		const size_t idx2 = t2.index();
@@ -75,17 +75,16 @@ namespace stork {
 		return false;
 	}
 
-	type_registry::type_registry(){
-	}
+	type_registry::type_registry(){}
 	
 	type_handle type_registry::get_handle(const type& t) {
 		return std::visit([this](const auto& t) {
 			if constexpr (std::is_same_v<decltype(t), const simple_type&>) {
 				switch (t) {
-					case simple_type::nothing:
-						return type_registry::get_void_handle();
-					case simple_type::number:
-						return type_registry::get_number_handle();
+					case simple_type::integer:
+						return type_registry::get_integer_handle();
+					case simple_type::real:
+						return type_registry::get_real_handle();
 					case simple_type::string:
 						return type_registry::get_string_handle();
 				}
@@ -97,21 +96,21 @@ namespace stork {
 		}, t);
 	}
 	
-	type type_registry::void_type = simple_type::nothing;
-	type type_registry::number_type = simple_type::number;
+	type type_registry::integer_type = simple_type::integer;
+	type type_registry::real_type = simple_type::real;
 	type type_registry::string_type = simple_type::string;
 }
 
 namespace std {
-	using namespace stork;
+	using namespace algoritmik;
 	std::string to_string(type_handle t) {
 		return std::visit([](const auto& t){
 			if constexpr(is_same_v<decltype(t), const simple_type&>) {
 				switch (t) {
-					case simple_type::nothing:
-						return std::string("void");
-					case simple_type::number:
-						return std::string("number");
+					case simple_type::integer:
+						return std::string("integer");
+					case simple_type::real:
+						return std::string("real");
 					case simple_type::string:
 						return std::string("string");
 				}

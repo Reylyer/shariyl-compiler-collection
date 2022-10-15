@@ -6,7 +6,7 @@
 #include "tokens.hpp"
 #include "types.hpp"
 
-namespace stork {
+namespace algoritmik {
 
 	enum struct node_operation {
 		param,

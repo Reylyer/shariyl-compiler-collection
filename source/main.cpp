@@ -2,13 +2,13 @@
 #include <module.hpp>
 #include <standard_functions.hpp>
 
-int main() {
+int main(int argc, char** argv) {
 	std::string path = __FILE__;
 	path = path.substr(0, path.find_last_of("/\\") + 1) + "test.stk";
 	
-	using namespace stork;
+	using namespace algoritmik;
 	
-	stork_module m;
+	algoritmik_module m;
 	
 	add_standard_functions(m);
 	

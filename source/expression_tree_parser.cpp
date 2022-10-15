@@ -5,7 +5,7 @@
 #include <stack>
 
 
-namespace stork {
+namespace algoritmik {
 	namespace {
 		enum struct operator_precedence {
 			brackets,

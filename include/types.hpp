@@ -5,10 +5,10 @@
 #include <set>
 #include <ostream>
 
-namespace stork {
+namespace algoritmik {
 	enum struct simple_type {
-		nothing,
-		number,
+		integer,
+		real,
 		string,
 	};
 	
@@ -49,7 +49,8 @@ namespace stork {
 		std::set<type, types_less> _types;
 		
 		static type void_type;
-		static type number_type;
+		static type integer_type;
+		static type real_type;
 		static type string_type;
 	public:
 		type_registry();
@@ -60,8 +61,12 @@ namespace stork {
 			return &void_type;
 		}
 		
-		static type_handle get_number_handle() {
-			return &number_type;
+		static type_handle get_integer_handle() {
+			return &integer_type;
+		}
+
+		static type_handle get_real_handle() {
+			return &real_type;
 		}
 		
 		static type_handle get_string_handle() {
@@ -71,7 +76,7 @@ namespace stork {
 }
 
 namespace std {
-	std::string to_string(stork::type_handle t);
+	std::string to_string(algoritmik::type_handle t);
 }
 
 #endif /* types_h */

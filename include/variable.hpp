@@ -7,7 +7,7 @@
 #include <functional>
 #include <string>
 
-namespace stork {
+namespace algoritmik {
 
 	class variable;
 	

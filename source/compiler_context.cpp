@@ -1,6 +1,6 @@
 #include <compiler_context.hpp>
 
-namespace stork{
+namespace algoritmik {
 	identifier_info::identifier_info(type_handle type_id, int index, identifier_scope scope) :
 		_type_id(type_id),
 		_index(index),

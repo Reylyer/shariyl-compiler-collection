@@ -1,11 +1,11 @@
 #include <push_back_stream.hpp>
 
-namespace stork {
+namespace algoritmik {
 	push_back_stream::push_back_stream(const get_character* input) :
 		_input(*input),
 		_line_number(0),
 		_char_index(0)
-	{
+	{	
 	}
 		
 	int push_back_stream::operator()() {
@@ -17,10 +17,10 @@ namespace stork {
 			_stack.pop();
 		}
 		if (ret == '\n') {
-			++_line_number;
+			_line_number++;
 		}
 		
-		++_char_index;
+		_char_index++;
 		
 		return ret;
 	}
@@ -29,10 +29,10 @@ namespace stork {
 		_stack.push(c);
 		
 		if (c == '\n') {
-			--_line_number;
+			_line_number--;
 		}
 		
-		--_char_index;
+		_char_index--;
 	}
 	
 	size_t push_back_stream::line_number() const {

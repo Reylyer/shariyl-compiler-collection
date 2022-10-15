@@ -7,7 +7,7 @@
 #include <string_view>
 #include <ostream>
 
-namespace stork {
+namespace algoritmik {
 	class error: public std::exception {
 	private:
 		std::string _message;

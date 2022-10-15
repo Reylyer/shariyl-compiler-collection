@@ -4,7 +4,7 @@
 #include <errors.hpp>
 #include <tokenizer.hpp>
 
-namespace stork {
+namespace algoritmik {
 	function_declaration parse_function_declaration(compiler_context& ctx, tokens_iterator& it) {
 		function_declaration ret;
 		

@@ -3,7 +3,7 @@
 #include <expression.hpp>
 #include <runtime_context.hpp>
 
-namespace stork {
+namespace algoritmik {
 	flow::flow(flow_type type, int break_level):
 		_type(type),
 		_break_level(break_level)

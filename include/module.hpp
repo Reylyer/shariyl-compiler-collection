@@ -9,7 +9,7 @@
 #include "variable.hpp"
 #include "runtime_context.hpp"
 
-namespace stork {
+namespace algoritmik {
 	namespace details {
 		template<typename R, typename Unpacked, typename Left>
 		struct unpacker;
@@ -156,14 +156,14 @@ namespace stork {
 	
 	class module_impl;
 	
-	class stork_module {
+	class algoritmik_module {
 	private:
 		std::unique_ptr<module_impl> _impl;
 		void add_external_function_impl(std::string declaration, function f);
 		void add_public_function_declaration(std::string declaration, std::string name, std::shared_ptr<function> fptr);
 		runtime_context* get_runtime_context();
 	public:
-		stork_module();
+		algoritmik_module();
 		
 		template<typename R, typename... Args>
 		void add_external_function(const char* name, std::function<R(Args...)> f) {
@@ -199,7 +199,7 @@ namespace stork {
 		
 		void reset_globals();
 		
-		~stork_module();
+		~algoritmik_module();
 	};
 }
 #endif /* module_hpp */

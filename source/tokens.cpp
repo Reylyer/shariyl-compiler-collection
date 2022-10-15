@@ -4,19 +4,20 @@
 #include <stack>
 #include <push_back_stream.hpp>
 
-namespace stork {
+namespace algoritmik {
 	namespace {
 		const lookup<std::string_view, reserved_token> operator_token_map {
+
 			{"++", reserved_token::inc},
 			{"--", reserved_token::dec},
-			
+			{"..", reserved_token::concat},
+
 			{"+", reserved_token::add},
 			{"-", reserved_token::sub},
-			{"..", reserved_token::concat},
 			{"*", reserved_token::mul},
 			{"/", reserved_token::div},
-			{"\\", reserved_token::idiv},
-			{"%", reserved_token::mod},
+			{"div", reserved_token::idiv},
+			{"mod", reserved_token::mod},
 			
 			{"~", reserved_token::bitwise_not},
 			{"&", reserved_token::bitwise_and},
@@ -25,7 +26,7 @@ namespace stork {
 			{"<<", reserved_token::shiftl},
 			{">>", reserved_token::shiftr},
 			
-			{"=", reserved_token::assign},
+			{"<-", reserved_token::assign},
 			
 			{"+=", reserved_token::add_assign},
 			{"-=", reserved_token::sub_assign},
@@ -41,11 +42,11 @@ namespace stork {
 			{"<<=", reserved_token::shiftl_assign},
 			{">>=", reserved_token::shiftr_assign},
 			
-			{"!", reserved_token::logical_not},
-			{"&&", reserved_token::logical_and},
-			{"||", reserved_token::logical_or},
+			{"not", reserved_token::logical_not},
+			{"and", reserved_token::logical_and},
+			{"or", reserved_token::logical_or},
 			
-			{"==", reserved_token::eq},
+			{"-", reserved_token::eq},
 			{"!=", reserved_token::ne},
 			{"<", reserved_token::lt},
 			{">", reserved_token::gt},
@@ -75,21 +76,28 @@ namespace stork {
 		
 			{"if", reserved_token::kw_if},
 			{"else", reserved_token::kw_else},
-			{"elif", reserved_token::kw_elif},
+			{"else if", reserved_token::kw_elif},
 
-			{"switch", reserved_token::kw_switch},
+			{"depends on", reserved_token::kw_switch},
 			{"case", reserved_token::kw_case},
 			{"default", reserved_token::kw_default},
 
 			{"for", reserved_token::kw_for},
+			{"traversal", reserved_token::kw_traversal},
 			{"while", reserved_token::kw_while},
 			{"do", reserved_token::kw_do},
 
 			{"break", reserved_token::kw_break},
 			{"continue", reserved_token::kw_continue},
-			{"return", reserved_token::kw_return},
+			{"->", reserved_token::kw_return},
 
 			{"function", reserved_token::kw_function},
+			{"procedure", reserved_token::kw_procedure},
+			{"program", reserved_token::kw_program},
+
+			{"kamus", reserved_token::kw_kamus},
+			{"kamus lokal", reserved_token::kw_kamus_lokal},
+			{"algoritma", reserved_token::kw_algoritma},
 			
 			{"void", reserved_token::kw_void},
 			{"number", reserved_token::kw_number},
@@ -248,7 +256,7 @@ namespace stork {
 }
 
 namespace std {
-	using namespace stork;
+	using namespace algoritmik;
 	std::string to_string(reserved_token t) {
 		return std::string(token_string_map.find(t)->second);
 	}

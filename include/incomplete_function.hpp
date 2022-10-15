@@ -6,7 +6,7 @@
 #include <deque>
 #include <functional>
 
-namespace stork {
+namespace algoritmik {
 	class compiler_context;
 	class runtime_context;
 	class tokens_iterator;
