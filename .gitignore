@@ -1,0 +1,10 @@
+CMAKE tutor
+stork
+.vs
+.vscode
+CMakeFiles
+build
+cmake_install.cmake
+*.vcxproj
+*.vcxproj.filters
+*.sln
