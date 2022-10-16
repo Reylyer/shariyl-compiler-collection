@@ -8,9 +8,6 @@
 
 namespace algoritmik {
 	enum struct reserved_token {
-		inc,
-		dec,
-		concat,
 
 		add,
 		sub,
@@ -19,29 +16,9 @@ namespace algoritmik {
 		idiv,
 		mod,
 		
-		bitwise_not,
-		bitwise_and,
-		bitwise_or,
-		bitwise_xor,
-		shiftl,
-		shiftr,
-		
 		assign,
-		
-		add_assign,
-		sub_assign,
-		concat_assign,
-		mul_assign,
-		div_assign,
-		idiv_assign,
-		mod_assign,
-		
-		and_assign,
-		or_assign,
-		xor_assign,
-		shiftl_assign,
-		shiftr_assign,
-		
+		traversal,
+
 		logical_not,
 		logical_and,
 		logical_or,
@@ -75,19 +52,23 @@ namespace algoritmik {
 		
 		kw_if,
 		kw_else,
-		kw_elif,
+		// kw_elif,
 
 		kw_switch,
 		kw_case,
 		kw_default,
 
 		kw_for,
-		kw_traversal,
 		kw_while,
 		kw_do,
+		kw_repeat,
+		kw_times,
+		kw_until,
+		kw_iterate,
+		kw_stop,
+		kw_traversal,
 
-		kw_break,
-		kw_continue,
+
 		kw_return,
 
 		kw_function,
@@ -102,7 +83,6 @@ namespace algoritmik {
 		kw_number,
 		kw_string,
 		
-		kw_public,
 	};
 	
 	class push_back_stream;
@@ -126,7 +106,7 @@ namespace algoritmik {
 	bool operator==(const eof&, const eof&);
 	bool operator!=(const eof&, const eof&);
 
-	using token_value = std::variant<reserved_token, identifier, double, std::string, eof>;
+	using token_value = std::variant<reserved_token, identifier, long long, double, std::string, eof>;
 
 	class token {
 	private:
@@ -153,10 +133,8 @@ namespace algoritmik {
 
 		bool has_value(const token_value& value) const;
 	};
-}
-
-namespace std {
 	std::string to_string(algoritmik::reserved_token t);
-	std::string to_string(const algoritmik::token_value& t);}
+	std::string to_string(const algoritmik::token_value& t);
+}
 
 #endif /* tokens_hpp */

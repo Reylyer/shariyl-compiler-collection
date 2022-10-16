@@ -99,6 +99,7 @@ namespace algoritmik {
 	type type_registry::integer_type = simple_type::integer;
 	type type_registry::real_type = simple_type::real;
 	type type_registry::string_type = simple_type::string;
+	type type_registry::void_type = simple_type::string; // kacau
 }
 
 namespace std {

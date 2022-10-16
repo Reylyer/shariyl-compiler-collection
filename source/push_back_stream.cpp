@@ -7,7 +7,14 @@ namespace algoritmik {
 		_char_index(0)
 	{	
 	}
-		
+	
+	/*
+	make int biar bisa negatif, char no negatif men
+	operator pop ini
+
+	kayaknya topnya awal file, bawahnya akhir file
+	*/ 
+
 	int push_back_stream::operator()() {
 		int ret = -1;
 		if (_stack.empty()) {

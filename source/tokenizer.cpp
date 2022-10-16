@@ -7,6 +7,8 @@
 #include <push_back_stream.hpp>
 #include <errors.hpp>
 
+#include <iostream>
+
 namespace algoritmik {
 	namespace {
 		enum struct character_type {
@@ -16,8 +18,11 @@ namespace algoritmik {
 			punct,
 		};
 		
+		/*
+		eof, space, valid word, punct
+		*/
 		character_type get_character_type(int c) {
-			if (c < 0 ) {
+			if (c < 0) {
 				return character_type::eof;
 			}
 			if (std::isspace(c)) {
@@ -29,38 +34,51 @@ namespace algoritmik {
 			return character_type::punct;
 		}
 		
+		/*
+		pinjem stream buat ambil word sekarang
+		*/
 		token fetch_word(push_back_stream& stream) {
 			size_t line_number = stream.line_number();
 			size_t char_index = stream.char_index();
 
 			std::string word;
 			
+			// ambil sampel
 			int c = stream();
 			
-			bool is_number = isdigit(c);
-			
 			do {
+				// masukin ke stack
 				word.push_back(char(c));
+				// ambil sampel lagi
 				c = stream();
-				
+
+				if(std::isspace(c) && word == "depends") {
+					// handle depends on
+				}
+				// handling double titik
 				if (c == '.' && word.back() == '.') {
 					stream.push_back(word.back());
 					word.pop_back();
 					break;
 				}
-			} while (get_character_type(c) == character_type::alphanum || (is_number && c == '.'));
+				
+			//                      kata                                          angka
+			} while (get_character_type(c) == character_type::alphanum || c == '.');
 			
 			stream.push_back(c);
 			
+			// check dia reserved ato bukan
 			if (std::optional<reserved_token> t  = get_keyword(word)) {
 				return token(*t, line_number, char_index);
 			} else {
+				// sebuah angka
 				if (std::isdigit(word.front())) {
 					char* endptr;
-					double num = strtol(word.c_str(), &endptr, 0);
-					if (*endptr != 0) {
-						num = strtod(word.c_str(), &endptr);
-						if (*endptr != 0) {
+					long long inum = strtol(word.c_str(), &endptr, 0);
+					// strtol kalo abis jadi angka ptr nunjuk ke 0
+					if (*endptr != 0) { // floating point
+						double dnum = strtod(word.c_str(), &endptr);
+						if (*endptr != 0) { // ga bisa di parse
 							size_t remaining = word.size() - (endptr - word.c_str());
 							throw unexpected_error(
 								std::string(1, char(*endptr)),
@@ -68,9 +86,10 @@ namespace algoritmik {
 								stream.char_index() - remaining
 							);
 						}
+						return token(dnum, line_number, char_index);
 					}
-					return token(num, line_number, char_index);
-				} else {
+					return token(inum, line_number, char_index);
+				} else { // sebuah identifier, bisa nama variable	
 					return token(identifier{std::move(word)}, line_number, char_index);
 				}
 			}
@@ -89,6 +108,8 @@ namespace algoritmik {
 				for (int c = stream(); get_character_type(c) == character_type::punct; c = stream()) {
 					unexpected.push_back(char(c));
 				}
+				std::cout << "fucked!\n";
+
 				throw unexpected_error(unexpected, err_line_number, err_char_index);
 			}
 		}
@@ -130,7 +151,7 @@ namespace algoritmik {
 							case '\n':
 							case '\r':
 								stream.push_back(c);
-								throw parsing_error("Expected closing '\"'", stream.line_number(), stream.char_index());
+								throw parsing_error("Tidak menemukan pasangan kutip '\"'", stream.line_number(), stream.char_index());
 							case '"':
 								return token(std::move(str), line_number, char_index);
 							default:
@@ -140,18 +161,7 @@ namespace algoritmik {
 				}
 			}
 			stream.push_back(c);
-			throw parsing_error("Expected closing '\"'", stream.line_number(), stream.char_index());
-		}
-		
-		void skip_line_comment(push_back_stream& stream) {
-			int c;
-			do {
-				c = stream();
-			} while (c != '\n' && get_character_type(c) != character_type::eof);
-			
-			if (c != '\n') {
-				stream.push_back(c);
-			}
+			throw parsing_error("Tidak menemukan pasangan kutip '\"'", stream.line_number(), stream.char_index());
 		}
 		
 		void skip_block_comment(push_back_stream& stream) {
@@ -159,14 +169,13 @@ namespace algoritmik {
 			int c;
 			do {
 				c = stream();
-				if (closing && c == '/') {
+				if (c == '}') {
 					return;
 				}
-				closing = (c == '*');
 			} while (get_character_type(c) != character_type::eof);
 
 			stream.push_back(c);
-			throw parsing_error("Expected closing '*/'", stream.line_number(), stream.char_index());
+			throw parsing_error("Tidak menemukan pasangan kurung kurawal '}'", stream.line_number(), stream.char_index());
 		}
 	
 		token tokenize(push_back_stream& stream) {
@@ -186,20 +195,9 @@ namespace algoritmik {
 						switch (c) {
 							case '"':
 								return fetch_string(stream);
-							case '/':
-							{
-								char c1 = stream();
-								switch(c1) {
-									case '/':
-										skip_line_comment(stream);
-										continue;
-									case '*':
-										skip_block_comment(stream);
-										continue;
-									default:
-										stream.push_back(c1);
-								}
-							}
+							case '{':
+								skip_block_comment(stream);
+								continue;
 							default:
 								stream.push_back(c);
 								return fetch_operator(stream);

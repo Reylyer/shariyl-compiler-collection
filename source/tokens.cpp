@@ -1,16 +1,15 @@
 #include <tokens.hpp>
 #include <lookup.hpp>
 #include <string_view>
+#include <string>
 #include <stack>
 #include <push_back_stream.hpp>
+
+#include <iostream>
 
 namespace algoritmik {
 	namespace {
 		const lookup<std::string_view, reserved_token> operator_token_map {
-
-			{"++", reserved_token::inc},
-			{"--", reserved_token::dec},
-			{"..", reserved_token::concat},
 
 			{"+", reserved_token::add},
 			{"-", reserved_token::sub},
@@ -19,34 +18,16 @@ namespace algoritmik {
 			{"div", reserved_token::idiv},
 			{"mod", reserved_token::mod},
 			
-			{"~", reserved_token::bitwise_not},
-			{"&", reserved_token::bitwise_and},
-			{"|", reserved_token::bitwise_or},
-			{"^", reserved_token::bitwise_xor},
-			{"<<", reserved_token::shiftl},
-			{">>", reserved_token::shiftr},
 			
 			{"<-", reserved_token::assign},
+			{"..", reserved_token::traversal},
 			
-			{"+=", reserved_token::add_assign},
-			{"-=", reserved_token::sub_assign},
-			{"..=", reserved_token::concat_assign},
-			{"*=", reserved_token::mul_assign},
-			{"/=", reserved_token::div_assign},
-			{"\\=", reserved_token::idiv_assign},
-			{"%=", reserved_token::mod_assign},
-			
-			{"&=", reserved_token::and_assign},
-			{"|=", reserved_token::or_assign},
-			{"^=", reserved_token::xor_assign},
-			{"<<=", reserved_token::shiftl_assign},
-			{">>=", reserved_token::shiftr_assign},
 			
 			{"not", reserved_token::logical_not},
 			{"and", reserved_token::logical_and},
 			{"or", reserved_token::logical_or},
 			
-			{"-", reserved_token::eq},
+			{"=", reserved_token::eq},
 			{"!=", reserved_token::ne},
 			{"<", reserved_token::lt},
 			{">", reserved_token::gt},
@@ -59,6 +40,7 @@ namespace algoritmik {
 			{",", reserved_token::comma},
 			
 			{";", reserved_token::semicolon},
+			{":", reserved_token::colon},
 			
 			{"(", reserved_token::open_round},
 			{")", reserved_token::close_round},
@@ -76,19 +58,23 @@ namespace algoritmik {
 		
 			{"if", reserved_token::kw_if},
 			{"else", reserved_token::kw_else},
-			{"else if", reserved_token::kw_elif},
+			// {"else if", reserved_token::kw_elif},
 
 			{"depends on", reserved_token::kw_switch},
 			{"case", reserved_token::kw_case},
 			{"default", reserved_token::kw_default},
 
 			{"for", reserved_token::kw_for},
-			{"traversal", reserved_token::kw_traversal},
 			{"while", reserved_token::kw_while},
 			{"do", reserved_token::kw_do},
+			{"repeat", reserved_token::kw_repeat},
+			{"times", reserved_token::kw_times},
+			{"iterate", reserved_token::kw_do},
+			{"until", reserved_token::kw_until},
+			{"stop", reserved_token::kw_stop},
+			{"traversal", reserved_token::kw_traversal},
 
-			{"break", reserved_token::kw_break},
-			{"continue", reserved_token::kw_continue},
+
 			{"->", reserved_token::kw_return},
 
 			{"function", reserved_token::kw_function},
@@ -103,9 +89,9 @@ namespace algoritmik {
 			{"number", reserved_token::kw_number},
 			{"string", reserved_token::kw_string},
 			
-			{"public", reserved_token::kw_public}
 		};
 		
+		// 
 		const lookup<reserved_token, std::string_view> token_string_map = ([](){
 			std::vector<std::pair<reserved_token, std::string_view>> container;
 			container.reserve(operator_token_map.size() + keyword_token_map.size());
@@ -133,19 +119,19 @@ namespace algoritmik {
 				_idx(idx)
 			{
 			}
-			
+			// operand operang
 			bool operator()(char l, char r) const {
 				return l < r;
 			}
-			
+			// subtree operand
 			bool operator()(std::pair<std::string_view, reserved_token> l, char r) const {
 				return l.first.size() <= _idx || l.first[_idx] < r;
 			}
-			
+			// operand subtree
 			bool operator()(char l, std::pair<std::string_view, reserved_token> r) const {
 				return r.first.size() > _idx && l < r.first[_idx];
 			}
-			
+			// subtree subtree
 			bool operator()(std::pair<std::string_view, reserved_token> l, std::pair<std::string_view, reserved_token> r) const {
 				return r.first.size() > _idx && (l.first.size() < _idx || l.first[_idx] < r.first[_idx]);
 			}
@@ -165,6 +151,7 @@ namespace algoritmik {
 			
 			candidates = std::equal_range(candidates.first, candidates.second, char(chars.top()), maximal_munch_comparator(idx));
 			
+			//              belom abis                                panjangnya sama?      
 			if (candidates.first != candidates.second && candidates.first->first.size() == idx + 1) {
 				match_size = idx + 1;
 				ret = candidates.first->second;
@@ -253,21 +240,21 @@ namespace algoritmik {
 	bool operator!=(const eof&, const eof&) {
 		return false;
 	}
-}
 
-namespace std {
-	using namespace algoritmik;
-	std::string to_string(reserved_token t) {
+	std::string algoritmik::to_string(reserved_token t) {
 		return std::string(token_string_map.find(t)->second);
 	}
 	
-	std::string to_string(const token_value& t) {
+	// bisa diprint
+	std::string algoritmik::to_string(const token_value& t) {
 		return std::visit(
 			[](const auto& t) {
 				if constexpr (std::is_same_v<decltype(t), const reserved_token&>) {
-					return to_string(t);
+					return algoritmik::to_string(t);
+				} else if constexpr (std::is_same_v<decltype(t), const long long&>) {
+					return std::to_string(t);
 				} else if constexpr (std::is_same_v<decltype(t), const double&>) {
-					return to_string(t);
+					return std::to_string(t);
 				} else if constexpr (std::is_same_v<decltype(t), const std::string&>) {
 					return t;
 				} else if constexpr (std::is_same_v<decltype(t), const identifier&>) {
@@ -279,4 +266,6 @@ namespace std {
 			t
 		);
 	}
+
 }
+
