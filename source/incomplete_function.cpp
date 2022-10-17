@@ -5,6 +5,7 @@
 #include <tokenizer.hpp>
 
 namespace algoritmik {
+	
 	function_declaration parse_function_declaration(compiler_context& ctx, tokens_iterator& it) {
 		function_declaration ret;
 		
@@ -25,12 +26,6 @@ namespace algoritmik {
 				}
 				
 				type_handle t = parse_type(ctx, it);
-				bool byref = false;
-				if (it->has_value(reserved_token::bitwise_and)) {
-					byref = true;
-					++it;
-				}
-				ft.param_type_id.push_back({t, byref});
 				
 				if (!it->has_value(reserved_token::close_round) && !it->has_value(reserved_token::comma)) {
 					ret.params.push_back(parse_declaration_name(ctx, it));
@@ -46,6 +41,7 @@ namespace algoritmik {
 		return ret;
 	}
 
+	// perlu diganti jadi indent
 	incomplete_function::incomplete_function(compiler_context& ctx, tokens_iterator& it) {
 		_decl = parse_function_declaration(ctx, it);
 		
@@ -57,11 +53,11 @@ namespace algoritmik {
 		
 		while (nesting && !it->is_eof()) {
 			if (it->has_value(reserved_token::open_curly)) {
-				++nesting;
+				nesting++;
 			}
 			
 			if (it->has_value(reserved_token::close_curly)) {
-				--nesting;
+				nesting--;
 			}
 			
 			_tokens.push_back(*it);

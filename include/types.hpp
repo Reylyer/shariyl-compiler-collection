@@ -10,6 +10,9 @@ namespace algoritmik {
 		integer,
 		real,
 		string,
+		character,
+		boolean,
+		nothing
 	};
 	
 	struct array_type;
@@ -17,6 +20,7 @@ namespace algoritmik {
 	struct tuple_type;
 	struct init_list_type;
 	
+	// wadah tipe yang mungkin
 	using type = std::variant<simple_type, array_type, function_type, tuple_type, init_list_type>;
 	using type_handle = const type*;
 	
@@ -52,6 +56,8 @@ namespace algoritmik {
 		static type integer_type;
 		static type real_type;
 		static type string_type;
+		static type character_type;
+		static type boolean_type;
 	public:
 		type_registry();
 		
@@ -72,11 +78,18 @@ namespace algoritmik {
 		static type_handle get_string_handle() {
 			return &string_type;
 		}
-	};
-}
 
-namespace std {
+		static type_handle get_character_handle() {
+			return &character_type;
+		}
+
+		static type_handle get_boolean_handle() {
+			return &boolean_type;
+		}
+	};
+
 	std::string to_string(algoritmik::type_handle t);
 }
+
 
 #endif /* types_h */

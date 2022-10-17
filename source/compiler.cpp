@@ -330,14 +330,6 @@ namespace algoritmik {
 			return create_break_statement(int(break_level));
 		}
 		
-		statement_ptr compile_continue_statement(compiler_context& ctx, tokens_iterator& it, possible_flow pf){
-			if (!pf.can_continue) {
-				throw unexpected_syntax(it);
-			}
-			// parse_token_value(ctx, it, reserved_token::kw_continue);
-			parse_token_value(ctx, it, reserved_token::semicolon);
-			return create_continue_statement();
-		}
 		
 		statement_ptr compile_return_statement(compiler_context& ctx, tokens_iterator& it, possible_flow pf){
 			parse_token_value(ctx, it, reserved_token::kw_return);

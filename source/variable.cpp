@@ -23,12 +23,27 @@ namespace algoritmik {
 		return convert_to_string(value);
 	}
 	
-	template class variable_impl<number>;
+	template class variable_impl<integer>;
+	template class variable_impl<real>;
+	template class variable_impl<character>;
+	template class variable_impl<boolean>;
 	template class variable_impl<string>;
 	template class variable_impl<function>;
 	template class variable_impl<array>;
 	
-	number clone_variable_value(number value) {
+	integer clone_variable_value(integer value) {
+		return value;
+	}
+
+	real clone_variable_value(real value) {
+		return value;
+	}
+
+	character clone_variable_value(character value) {
+		return value;
+	}
+
+	boolean clone_variable_value(boolean value) {
 		return value;
 	}
 	
@@ -48,12 +63,20 @@ namespace algoritmik {
 		return ret;
 	}
 	
-	string convert_to_string(number value) {
-		if (value == int(value)) {
-			return from_std_string(std::to_string(int(value)));
-		} else {
-			return from_std_string(std::to_string(value));
-		}
+	string convert_to_string(const integer& value) {
+		return from_std_string(std::to_string(value));
+	}
+
+	string convert_to_string(const real& value) {
+		return from_std_string(std::to_string(value));
+	}
+
+	string convert_to_string(const character& value) {
+		return from_std_string(std::to_string(value));
+	}
+
+	string convert_to_string(const boolean& value) {
+		return from_std_string(value ? "True" : "False");
 	}
 	
 	string convert_to_string(const string& value) {

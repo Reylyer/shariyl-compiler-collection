@@ -18,7 +18,10 @@ namespace algoritmik {
 	
 	class runtime_context;
 	
-	using number = double;
+	using integer = long long;
+	using real = double;
+	using character = char;
+	using boolean = bool;
 	using string = std::shared_ptr<std::string>;
 	using array = std::deque<variable_ptr>;
 	using function = std::function<void(runtime_context&)>;
@@ -26,7 +29,10 @@ namespace algoritmik {
 	using initializer_list = array;
 	
 	using lvalue = variable_ptr;
-	using lnumber = std::shared_ptr<variable_impl<number> >;
+	using linteger = std::shared_ptr<variable_impl<integer> >;
+	using lreal = std::shared_ptr<variable_impl<real> >;
+	using lcharacter = std::shared_ptr<variable_impl<character> >;
+	using lboolean = std::shared_ptr<variable_impl<boolean> >;
 	using lstring = std::shared_ptr<variable_impl<string> >;
 	using larray = std::shared_ptr<variable_impl<array> >;
 	using lfunction = std::shared_ptr<variable_impl<function> >;
@@ -67,7 +73,10 @@ namespace algoritmik {
 		string to_string() const override;
 	};
 	
-	number clone_variable_value(number value);
+	integer clone_variable_value(integer value);
+	real clone_variable_value(real value);
+	character clone_variable_value(character value);
+	boolean clone_variable_value(boolean value);
 	string clone_variable_value(const string& value);
 	function clone_variable_value(const function& value);
 	array clone_variable_value(const array& value);
@@ -77,7 +86,10 @@ namespace algoritmik {
 		return clone_variable_value(v->value);
 	}
 	
-	string convert_to_string(number value);
+	string convert_to_string(integer value);
+	string convert_to_string(real value);
+	string convert_to_string(character value);
+	string convert_to_string(boolean value);
 	string convert_to_string(const string& value);
 	string convert_to_string(const function& value);
 	string convert_to_string(const array& value);

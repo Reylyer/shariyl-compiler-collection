@@ -224,78 +224,6 @@ namespace algoritmik {
 
 		BINARY_EXPRESSION(mod, return t1 - t2 * int(t1/t2));
 
-		BINARY_EXPRESSION(band, return int(t1) & int(t2));
-
-		BINARY_EXPRESSION(bor, return int(t1) | int(t2));
-
-		BINARY_EXPRESSION(bxor, return int(t1) ^ int(t2));
-
-		BINARY_EXPRESSION(bsl, return int(t1) << int(t2));
-
-		BINARY_EXPRESSION(bsr, return int(t1) >> int(t2));
-
-		BINARY_EXPRESSION(concat, return std::make_shared<std::string>(*t1 + *t2));
-		
-		BINARY_EXPRESSION(add_assign,
-			t1->value += t2;
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(sub_assign,
-			t1->value -= t2;
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(mul_assign,
-			t1->value *= t2;
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(div_assign,
-			t1->value /= t2;
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(idiv_assign,
-			t1->value = int(t1->value / t2);
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(mod_assign,
-			t1->value = t1->value - t2 * int(t1->value/t2);;
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(band_assign,
-			t1->value = int(t1->value) & int(t2);
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(bor_assign,
-			t1->value = int(t1->value) | int(t2);
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(bxor_assign,
-			t1->value = int(t1->value) ^ int(t2);
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(bsl_assign,
-			t1->value = int(t1->value) << int(t2);
-			return t1;
-		);
-		
-		BINARY_EXPRESSION(bsr_assign,
-			t1->value = int(t1->value) >> int(t2);
-			return t1;
-		);
-
-		BINARY_EXPRESSION(concat_assign,
-			t1->value = std::make_shared<std::string>(*t1->value + *t2);
-			return t1;
-		);
-		
 		BINARY_EXPRESSION(assign,
 			t1->value = std::move(t2);
 			return t1;
@@ -1073,12 +1001,12 @@ namespace algoritmik {
 			return std::visit([&](const auto& t){
 				if constexpr(std::is_same_v<decltype(t), const simple_type&>) {
 					switch (t) {
-						case simple_type::number:
-							return expression_builder<number>::build_param_expression(np, context);
-						case simple_type::string:
-							return expression_builder<string>::build_param_expression(np, context);
-						case simple_type::nothing:
-							throw expression_builder_error();
+						// case simple_type::number:
+						// 	return expression_builder<number>::build_param_expression(np, context);
+						// case simple_type::string:
+						// 	return expression_builder<string>::build_param_expression(np, context);
+						// case simple_type::nothing:
+						// 	throw expression_builder_error();
 					}
 					assert(0);
 					return expression<lvalue>::ptr(); //cannot happen
@@ -1145,7 +1073,7 @@ namespace algoritmik {
 	}
 	
 	expression<number>::ptr build_number_expression(compiler_context& context, tokens_iterator& it) {
-		return build_expression<number>(type_registry::get_number_handle(), context, it, true);
+		return build_expression<number>(type_registry::get_integer_handle(), context, it, true);
 	}
 	
 	expression<lvalue>::ptr build_initialization_expression(
@@ -1161,13 +1089,13 @@ namespace algoritmik {
 		return std::visit([](const auto& t){
 			if constexpr(std::is_same_v<decltype(t), const simple_type&>){
 				switch (t) {
-					case simple_type::number:
-						return expression<lvalue>::ptr(std::make_unique<default_initialization_expression<number> >());
-					case simple_type::string:
-						return expression<lvalue>::ptr(std::make_unique<default_initialization_expression<string> >());
-					case simple_type::nothing:
-						assert(0);
-						return expression<lvalue>::ptr(nullptr); //cannot happen
+					// case simple_type::number:
+					// 	return expression<lvalue>::ptr(std::make_unique<default_initialization_expression<number> >());
+					// case simple_type::string:
+					// 	return expression<lvalue>::ptr(std::make_unique<default_initialization_expression<string> >());
+					// case simple_type::nothing:
+					// 	assert(0);
+					// 	return expression<lvalue>::ptr(nullptr); //cannot happen
 				}
 				assert(0);
 				return expression<lvalue>::ptr(nullptr); //cannot happen

@@ -13,12 +13,8 @@ namespace algoritmik {
 			prefix,
 			multiplication,
 			addition,
-			shift,
 			comparison,
 			equality,
-			bitwise_and,
-			bitwise_xor,
-			bitwise_or,
 			logical_and,
 			logical_or,
 			assignment,
@@ -75,10 +71,6 @@ namespace algoritmik {
 					case node_operation::concat:
 						precedence = operator_precedence::addition;
 						break;
-					case node_operation::bsl:
-					case node_operation::bsr:
-						precedence = operator_precedence::shift;
-						break;
 					case node_operation::lt:
 					case node_operation::gt:
 					case node_operation::le:
@@ -89,15 +81,6 @@ namespace algoritmik {
 					case node_operation::ne:
 						precedence = operator_precedence::equality;
 						break;
-					case node_operation::band:
-						precedence = operator_precedence::bitwise_and;
-						break;
-					case node_operation::bxor:
-						precedence = operator_precedence::bitwise_xor;
-						break;
-					case node_operation::bor:
-						precedence = operator_precedence::bitwise_or;
-						break;
 					case node_operation::land:
 						precedence = operator_precedence::logical_and;
 						break;
@@ -105,18 +88,6 @@ namespace algoritmik {
 						precedence = operator_precedence::logical_or;
 						break;
 					case node_operation::assign:
-					case node_operation::add_assign:
-					case node_operation::sub_assign:
-					case node_operation::mul_assign:
-					case node_operation::div_assign:
-					case node_operation::idiv_assign:
-					case node_operation::mod_assign:
-					case node_operation::band_assign:
-					case node_operation::bor_assign:
-					case node_operation::bxor_assign:
-					case node_operation::bsl_assign:
-					case node_operation::bsr_assign:
-					case node_operation::concat_assign:
 					case node_operation::ternary:
 						precedence = operator_precedence::assignment;
 						break;
@@ -139,13 +110,8 @@ namespace algoritmik {
 					case node_operation::init:
 						number_of_operands = 0; //zero or more
 						break;
-					case node_operation::postinc:
-					case node_operation::postdec:
-					case node_operation::preinc:
-					case node_operation::predec:
 					case node_operation::positive:
 					case node_operation::negative:
-					case node_operation::bnot:
 					case node_operation::lnot:
 					case node_operation::size:
 					case node_operation::tostring:
@@ -164,20 +130,12 @@ namespace algoritmik {
 
 		operator_info get_operator_info(reserved_token token, bool prefix, size_t line_number, size_t char_index) {
 			switch(token) {
-				case reserved_token::inc:
-					return prefix ? operator_info(node_operation::preinc, line_number, char_index)
-					              : operator_info(node_operation::postinc, line_number, char_index);
-				case reserved_token::dec:
-					return prefix ? operator_info(node_operation::predec, line_number, char_index)
-					              : operator_info(node_operation::postdec, line_number, char_index);
 				case reserved_token::add:
 					return prefix ? operator_info(node_operation::positive, line_number, char_index)
 								  : operator_info(node_operation::add, line_number, char_index);
 				case reserved_token::sub:
 					return prefix ? operator_info(node_operation::negative, line_number, char_index)
 					              : operator_info(node_operation::sub, line_number, char_index);
-				case reserved_token::concat:
-					return operator_info(node_operation::concat, line_number, char_index);
 				case reserved_token::mul:
 					return operator_info(node_operation::mul, line_number, char_index);
 				case reserved_token::div:
@@ -186,44 +144,8 @@ namespace algoritmik {
 					return operator_info(node_operation::idiv, line_number, char_index);
 				case reserved_token::mod:
 					return operator_info(node_operation::mod, line_number, char_index);
-				case reserved_token::bitwise_not:
-					return operator_info(node_operation::bnot, line_number, char_index);
-				case reserved_token::bitwise_and:
-					return operator_info(node_operation::band, line_number, char_index);
-				case reserved_token::bitwise_or:
-					return operator_info(node_operation::bor, line_number, char_index);
-				case reserved_token::bitwise_xor:
-					return operator_info(node_operation::bxor, line_number, char_index);
-				case reserved_token::shiftl:
-					return operator_info(node_operation::bsl, line_number, char_index);
-				case reserved_token::shiftr:
-					return operator_info(node_operation::bsr, line_number, char_index);
 				case reserved_token::assign:
 					return operator_info(node_operation::assign, line_number, char_index);
-				case reserved_token::add_assign:
-					return operator_info(node_operation::add_assign, line_number, char_index);
-				case reserved_token::sub_assign:
-					return operator_info(node_operation::sub_assign, line_number, char_index);
-				case reserved_token::concat_assign:
-					return operator_info(node_operation::concat_assign, line_number, char_index);
-				case reserved_token::mul_assign:
-					return operator_info(node_operation::mod_assign, line_number, char_index);
-				case reserved_token::div_assign:
-					return operator_info(node_operation::div_assign, line_number, char_index);
-				case reserved_token::idiv_assign:
-					return operator_info(node_operation::idiv_assign, line_number, char_index);
-				case reserved_token::mod_assign:
-					return operator_info(node_operation::mod_assign, line_number, char_index);
-				case reserved_token::and_assign:
-					return operator_info(node_operation::band_assign, line_number, char_index);
-				case reserved_token::or_assign:
-					return operator_info(node_operation::bor_assign, line_number, char_index);
-				case reserved_token::xor_assign:
-					return operator_info(node_operation::bxor_assign, line_number, char_index);
-				case reserved_token::shiftl_assign:
-					return operator_info(node_operation::bsl_assign, line_number, char_index);
-				case reserved_token::shiftr_assign:
-					return operator_info(node_operation::bsr_assign, line_number, char_index);
 				case reserved_token::logical_not:
 					return operator_info(node_operation::lnot, line_number, char_index);
 				case reserved_token::logical_and:
@@ -257,7 +179,7 @@ namespace algoritmik {
 				case reserved_token::open_curly:
 					return operator_info(node_operation::init, line_number, char_index);
 				default:
-					throw unexpected_syntax_error(std::to_string(token), line_number, char_index);
+					throw unexpected_syntax_error(algoritmik::to_string(token), line_number, char_index);
 			}
 		}
 
@@ -369,7 +291,7 @@ namespace algoritmik {
 					
 					if ((oi.precedence == operator_precedence::prefix) != expected_operand) {
 						throw unexpected_syntax_error(
-							std::to_string(it->get_value()),
+							algoritmik::to_string(it->get_value()),
 							it->get_line_number(),
 							it->get_char_index()
 						);
@@ -384,44 +306,44 @@ namespace algoritmik {
 							++it;
 							if (!it->has_value(reserved_token::close_round)) {
 								while (true) {
-									bool remove_lvalue = !it->has_value(reserved_token::bitwise_and);
-									if (!remove_lvalue) {
-										++it;
-									}
-									node_ptr argument = parse_expression_tree_impl(context, it, false, false);
-									if (remove_lvalue) {
-										size_t line_number = argument->get_line_number();
-										size_t char_index = argument->get_char_index();
-										std::vector<node_ptr> argument_vector;
-										argument_vector.push_back(std::move(argument));
-										argument = std::make_unique<node>(
-											context,
-											node_operation::param,
-											std::move(argument_vector),
-											line_number,
-											char_index
-										);
-									} else if (!argument->is_lvalue()) {
-										throw wrong_type_error(
-											std::to_string(argument->get_type_id()),
-											std::to_string(argument->get_type_id()),
-											true,
-											argument->get_line_number(),
-											argument->get_char_index()
-										);
-									}
+									// bool remove_lvalue = !it->has_value(reserved_token::bitwise_and);
+									// if (!remove_lvalue) {
+									// 	++it;
+									// }
+									// node_ptr argument = parse_expression_tree_impl(context, it, false, false);
+									// if (remove_lvalue) {
+									// 	size_t line_number = argument->get_line_number();
+									// 	size_t char_index = argument->get_char_index();
+									// 	std::vector<node_ptr> argument_vector;
+									// 	argument_vector.push_back(std::move(argument));
+									// 	argument = std::make_unique<node>(
+									// 		context,
+									// 		node_operation::param,
+									// 		std::move(argument_vector),
+									// 		line_number,
+									// 		char_index
+									// 	);
+									// } else if (!argument->is_lvalue()) {
+									// 	throw wrong_type_error(
+									// 		std::to_string(argument->get_type_id()),
+									// 		std::to_string(argument->get_type_id()),
+									// 		true,
+									// 		argument->get_line_number(),
+									// 		argument->get_char_index()
+									// 	);
+									// }
 									
-									operand_stack.push(std::move(argument));
+									// operand_stack.push(std::move(argument));
 
-									++oi.number_of_operands;
+									// ++oi.number_of_operands;
 									
-									if (it->has_value(reserved_token::close_round)) {
-										break;
-									} else if (it->has_value(reserved_token::comma)) {
-										++it;
-									} else {
-										throw syntax_error("Expected ',', or closing ')'", it->get_line_number(), it->get_char_index());
-									}
+									// if (it->has_value(reserved_token::close_round)) {
+									// 	break;
+									// } else if (it->has_value(reserved_token::comma)) {
+									// 	++it;
+									// } else {
+									// 	throw syntax_error("Expected ',', or closing ')'", it->get_line_number(), it->get_char_index());
+									// }
 								}
 							}
 							break;
@@ -449,7 +371,7 @@ namespace algoritmik {
 				} else {
 					if (!expected_operand) {
 						throw unexpected_syntax_error(
-							std::to_string(it->get_value()),
+							algoritmik::to_string(it->get_value()),
 							it->get_line_number(),
 							it->get_char_index()
 						);

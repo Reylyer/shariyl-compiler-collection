@@ -3,7 +3,7 @@
 
 namespace algoritmik {
 	bool type_registry::types_less::operator()(const type& t1, const type& t2) const {
-		const size_t idx1 = t1.index();
+		const size_t idx1 = t1.index(); // type nya
 		const size_t idx2 = t2.index();
 		
 		if (idx1 != idx2) {
@@ -12,13 +12,13 @@ namespace algoritmik {
 		
 		switch (idx1) {
 			case 0:
-				return std::get<0>(t1) < std::get<0>(t2);
+				return std::get<simple_type>(t1) < std::get<simple_type>(t2);
 			case 1:
-				return std::get<1>(t1).inner_type_id < std::get<1>(t2).inner_type_id;
+				return std::get<array_type>(t1).inner_type_id < std::get<array_type>(t2).inner_type_id;
 			case 2:
 			{
-				const function_type& ft1 = std::get<2>(t1);
-				const function_type& ft2 = std::get<2>(t2);
+				const function_type& ft1 = std::get<function_type>(t1);
+				const function_type& ft2 = std::get<function_type>(t2);
 				
 				if (ft1.return_type_id != ft2.return_type_id) {
 					return ft1.return_type_id < ft2.return_type_id;
@@ -40,8 +40,8 @@ namespace algoritmik {
 			}
 			case 3:
 			{
-				const tuple_type& tt1 = std::get<3>(t1);
-				const tuple_type& tt2 = std::get<3>(t2);
+				const tuple_type& tt1 = std::get<tuple_type>(t1);
+				const tuple_type& tt2 = std::get<tuple_type>(t2);
 				
 				if (tt1.inner_type_id.size() != tt2.inner_type_id.size()) {
 					return tt1.inner_type_id.size() < tt2.inner_type_id.size();
@@ -56,8 +56,8 @@ namespace algoritmik {
 			}
 			case 4:
 			{
-				const init_list_type& ilt1 = std::get<4>(t1);
-				const init_list_type& ilt2 = std::get<4>(t2);
+				const init_list_type& ilt1 = std::get<init_list_type>(t1);
+				const init_list_type& ilt2 = std::get<init_list_type>(t2);
 				
 				if (ilt1.inner_type_id.size() != ilt2.inner_type_id.size()) {
 					return ilt1.inner_type_id.size() < ilt2.inner_type_id.size();
@@ -75,6 +75,8 @@ namespace algoritmik {
 		return false;
 	}
 
+	//huft aman dari bawah
+
 	type_registry::type_registry(){}
 	
 	type_handle type_registry::get_handle(const type& t) {
@@ -87,6 +89,10 @@ namespace algoritmik {
 						return type_registry::get_real_handle();
 					case simple_type::string:
 						return type_registry::get_string_handle();
+					case simple_type::character:
+						return type_registry::get_character_handle();
+					case simple_type::boolean:
+						return type_registry::get_boolean_handle();
 				}
 				assert(0);
 				return type_registry::get_void_handle(); //cannot happen;
@@ -99,14 +105,13 @@ namespace algoritmik {
 	type type_registry::integer_type = simple_type::integer;
 	type type_registry::real_type = simple_type::real;
 	type type_registry::string_type = simple_type::string;
-	type type_registry::void_type = simple_type::string; // kacau
-}
+	type type_registry::character_type = simple_type::character;
+	type type_registry::boolean_type = simple_type::boolean;
+	type type_registry::void_type = simple_type::nothing; // kacau
 
-namespace std {
-	using namespace algoritmik;
-	std::string to_string(type_handle t) {
+	std::string algoritmik::to_string(type_handle t) {
 		return std::visit([](const auto& t){
-			if constexpr(is_same_v<decltype(t), const simple_type&>) {
+			if constexpr(std::is_same_v<decltype(t), const simple_type&>) {
 				switch (t) {
 					case simple_type::integer:
 						return std::string("integer");
@@ -114,14 +119,16 @@ namespace std {
 						return std::string("real");
 					case simple_type::string:
 						return std::string("string");
+					case simple_type::boolean:
+						return std::string("boolean");
 				}
 				assert(0);
 				return std::string(""); //cannot happen
-			} else if constexpr(is_same_v<decltype(t), const array_type&>) {
+			} else if constexpr(std::is_same_v<decltype(t), const array_type&>) {
 				std::string ret = to_string(t.inner_type_id);
 				ret += "[]";
 				return ret;
-			} else if constexpr(is_same_v<decltype(t), const function_type&>) {
+			} else if constexpr(std::is_same_v<decltype(t), const function_type&>) {
 				std::string ret = to_string(t.return_type_id) + "(";
 				const char* separator = "";
 				for (const function_type::param& p: t.param_type_id) {
@@ -130,7 +137,7 @@ namespace std {
 				}
 				ret += ")";
 				return ret;
-			} else if constexpr(is_same_v<decltype(t), const tuple_type&>) {
+			} else if constexpr(std::is_same_v<decltype(t), const tuple_type&>) {
 				std::string ret = "[";
 				const char* separator = "";
 				for (type_handle it : t.inner_type_id) {
@@ -139,14 +146,14 @@ namespace std {
 				}
 				ret += "]";
 				return ret;
-			} else if constexpr(is_same_v<decltype(t), const init_list_type&>) {
-				std::string ret = "{";
+			} else if constexpr(std::is_same_v<decltype(t), const init_list_type&>) {
+				std::string ret = "<";
 				const char* separator = "";
 				for (type_handle it : t.inner_type_id) {
 					ret +=  separator + to_string(it);
 					separator = ",";
 				}
-				ret += "}";
+				ret += ">";
 				return ret;
 			}
 		}, *t);
