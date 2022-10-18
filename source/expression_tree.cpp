@@ -4,16 +4,21 @@
 
 namespace algoritmik {
 	namespace {
+		//                            _type_id,         _lvalue,                 type_id,       lvalue        
 		bool is_convertible(type_handle type_from, bool lvalue_from, type_handle type_to, bool lvalue_to) {
+			// convert to void ( return ga di tangkep )
 			if (type_to == type_registry::get_void_handle()) {
 				return true;
 			}
+			// perlu convert, bisa diconvert
 			if (lvalue_to) {
 				return lvalue_from && type_from == type_to;
 			}
+			// jelas malah ga perlu convert
 			if (type_from == type_to) {
 				return true;
 			}
+			// list
 			if (const init_list_type* ilt = std::get_if<init_list_type>(type_from)) {
 				if (lvalue_to) {
 					return false;
@@ -44,10 +49,12 @@ namespace algoritmik {
 					}
 				}, *type_to);
 			}
-			return type_from == type_registry::get_number_handle() && type_to == type_registry::get_string_handle();
+			// TODO: need fix
+			return type_from == type_registry::get_integer_handle() && type_to == type_registry::get_string_handle();
 		}
 	}
 
+	// constructor
 	node::node(compiler_context& context, node_value value, std::vector<node_ptr> children, size_t line_number, size_t char_index) :
 		_value(std::move(value)),
 		_children(std::move(children)),
@@ -55,74 +62,90 @@ namespace algoritmik {
 		_char_index(char_index)
 	{
 		const type_handle void_handle = type_registry::get_void_handle();
-		const type_handle number_handle = type_registry::get_number_handle();
+		const type_handle integer_handle = type_registry::get_integer_handle();
+		const type_handle real_handle = type_registry::get_real_handle();
+		const type_handle character_handle = type_registry::get_character_handle();
+		const type_handle boolean_handle = type_registry::get_boolean_handle();
 		const type_handle string_handle = type_registry::get_string_handle();
 		
-		std::visit([&](const auto& value) {
+		std::visit([&](const auto& value) {  
+
+			// check tipe node
 			if constexpr(std::is_same_v<decltype(value), const std::string&>) {
 				_type_id = string_handle;
 				_lvalue = false;
 			} else if constexpr(std::is_same_v<decltype(value), const double&>) {
-				_type_id = number_handle;
+				_type_id = real_handle;
 				_lvalue = false;
-			} else if constexpr(std::is_same_v<decltype(value), const identifier&>) {
+			} 
+			else if constexpr(std::is_same_v<decltype(value), const long long&>) {
+				_type_id = integer_handle;
+				_lvalue = false;
+			} 
+			else if constexpr(std::is_same_v<decltype(value), const char&>) {
+				_type_id = character_handle;
+				_lvalue = false;
+			}
+			else if constexpr(std::is_same_v<decltype(value), const bool&>) {
+				_type_id = boolean_handle;
+				_lvalue = false;
+			}
+			
+			// identifier
+			else if constexpr(std::is_same_v<decltype(value), const identifier&>) {
 				if (const identifier_info* info = context.find(value.name)) {
 					_type_id = info->type_id();
 					_lvalue = (info->get_scope() != identifier_scope::function);
 				} else {
 					throw undeclared_error(value.name, _line_number, _char_index);
 				}
+			// berupa node
 			} else if constexpr(std::is_same_v<decltype(value), const node_operation&>) {
 				switch (value) {
 					case node_operation::param:
 						_type_id = _children[0]->_type_id;
 						_lvalue = false;
 						break;
-					case node_operation::preinc:
-					case node_operation::predec:
-						_type_id = number_handle;
-						_lvalue = true;
-						_children[0]->check_conversion(number_handle, true);
-						break;
-					case node_operation::postinc:
-					case node_operation::postdec:
-						_type_id = number_handle;
-						_lvalue = false;
-						_children[0]->check_conversion(number_handle, true);
-						break;
+					// unary
 					case node_operation::positive:
 					case node_operation::negative:
-					case node_operation::bnot:
 					case node_operation::lnot:
-						_type_id = number_handle;
+						_type_id = integer_handle; // lom
 						_lvalue = false;
-						_children[0]->check_conversion(number_handle, false);
+						_children[0]->check_conversion(real_handle, false);
 						break;
 					case node_operation::size:
-						_type_id = number_handle;
+						_type_id = integer_handle;
 						_lvalue = false;
 						break;
 					case node_operation::tostring:
 						_type_id = string_handle;
 						_lvalue = false;
 						break;
+
+					// binary
 					case node_operation::add:
+						_lvalue = false;
+						if (_children[0]->is_string() ){
+							_type_id = string_handle;
+							_children[0]->check_conversion(string_handle, false);
+							_children[1]->check_conversion(string_handle, false);
+							break;
+						}
 					case node_operation::sub:
 					case node_operation::mul:
 					case node_operation::div:
 					case node_operation::idiv:
 					case node_operation::mod:
-					case node_operation::band:
-					case node_operation::bor:
-					case node_operation::bxor:
-					case node_operation::bsl:
-					case node_operation::bsr:
 					case node_operation::land:
 					case node_operation::lor:
-						_type_id = number_handle;
-						_lvalue = false;
-						_children[0]->check_conversion(number_handle, false);
-						_children[1]->check_conversion(number_handle, false);
+						if (_children[0]->is_integer()) {
+							_type_id = integer_handle;
+							_children[1]->check_conversion(integer_handle, false);
+						} else { // if (_children[0]->is_real()) {
+							_type_id = real_handle;
+							_children[1]->check_conversion(real_handle, false);
+						} 
 						break;
 					case node_operation::eq:
 					case node_operation::ne:
@@ -130,49 +153,16 @@ namespace algoritmik {
 					case node_operation::gt:
 					case node_operation::le:
 					case node_operation::ge:
-						_type_id = number_handle;
+						_type_id = real_handle;
 						_lvalue = false;
-						if (!_children[0]->is_number() || !_children[1]->is_number()) {
-							_children[0]->check_conversion(string_handle, false);
-							_children[1]->check_conversion(string_handle, false);
-						} else {
-							_children[0]->check_conversion(number_handle, false);
-							_children[1]->check_conversion(number_handle, false);
-						}
-						break;
-					case node_operation::concat:
-						_type_id = context.get_handle(simple_type::string);
-						_lvalue = false;
-						_children[0]->check_conversion(string_handle, false);
-						_children[1]->check_conversion(string_handle, false);
+						_children[1]->check_conversion(real_handle, false);
+						_children[0]->check_conversion(real_handle, false);
 						break;
 					case node_operation::assign:
 						_type_id = _children[0]->get_type_id();
 						_lvalue = true;
 						_children[0]->check_conversion(_type_id, true);
 						_children[1]->check_conversion(_type_id, false);
-						break;
-					case node_operation::add_assign:
-					case node_operation::sub_assign:
-					case node_operation::mul_assign:
-					case node_operation::div_assign:
-					case node_operation::idiv_assign:
-					case node_operation::mod_assign:
-					case node_operation::band_assign:
-					case node_operation::bor_assign:
-					case node_operation::bxor_assign:
-					case node_operation::bsl_assign:
-					case node_operation::bsr_assign:
-						_type_id = number_handle;
-						_lvalue = true;
-						_children[0]->check_conversion(number_handle, true);
-						_children[1]->check_conversion(number_handle, false);
-						break;
-					case node_operation::concat_assign:
-						_type_id = string_handle;
-						_lvalue = true;
-						_children[0]->check_conversion(string_handle, true);
-						_children[1]->check_conversion(string_handle, false);
 						break;
 					case node_operation::comma:
 						for (int i = 0; i < int(_children.size()) - 1; ++i) {
@@ -201,6 +191,12 @@ namespace algoritmik {
 							throw semantic_error(to_string(_children[0]->_type_id) + " is not indexable",
 							                     _line_number, _char_index);
 						}
+						break;
+					case node_operation::traversal:
+						_type_id = integer_handle;
+						_lvalue = false;
+						_children[0]->check_conversion(integer_handle, false);
+						_children[1]->check_conversion(integer_handle, false);
 						break;
 					case node_operation::ternary:
 						_children[0]->check_conversion(number_handle, false);
@@ -269,8 +265,20 @@ namespace algoritmik {
 		return std::holds_alternative<identifier>(_value);
 	}
 	
-	bool node::is_number() const {
+	bool node::is_integer() const {
+		return std::holds_alternative<long long>(_value);
+	}
+
+	bool node::is_real() const {
 		return std::holds_alternative<double>(_value);
+	}
+
+	bool node::is_character() const {
+		return std::holds_alternative<char>(_value);
+	}
+
+	bool node::is_boolean() const {
+		return std::holds_alternative<bool>(_value);
 	}
 	
 	bool node::is_string() const {
@@ -285,8 +293,20 @@ namespace algoritmik {
 		return std::get<identifier>(_value).name;
 	}
 	
-	double node::get_number() const {
+	long long node::get_integer() const {
+		return std::get<long long>(_value);
+	}
+
+	double node::get_real() const {
 		return std::get<double>(_value);
+	}
+
+	char node::get_character() const {
+		return std::get<char>(_value);
+	}
+
+	bool node::get_boolean() const {
+		return std::get<bool>(_value);
 	}
 	
 	std::string_view node::get_string() const {
@@ -315,7 +335,7 @@ namespace algoritmik {
 	
 	void node::check_conversion(type_handle type_id, bool lvalue) const{
 		if (!is_convertible(_type_id, _lvalue, type_id, lvalue)) {
-			throw wrong_type_error(std::to_string(_type_id), std::to_string(type_id), lvalue,
+			throw wrong_type_error(algoritmik::to_string(_type_id), algoritmik::to_string(type_id), lvalue,
 			                       _line_number, _char_index);
 		}
 	}

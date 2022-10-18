@@ -25,7 +25,10 @@ namespace algoritmik {
 	};
 	
 	expression<void>::ptr build_void_expression(compiler_context& context, tokens_iterator& it);
-	expression<number>::ptr build_number_expression(compiler_context& context, tokens_iterator& it);
+	expression<integer>::ptr build_integer_expression(compiler_context& context, tokens_iterator& it);
+	expression<real>::ptr build_real_expression(compiler_context& context, tokens_iterator& it);
+	expression<character>::ptr build_character_expression(compiler_context& context, tokens_iterator& it);
+	expression<boolean>::ptr build_boolean_expression(compiler_context& context, tokens_iterator& it);
 	expression<lvalue>::ptr build_initialization_expression(
 		compiler_context& context,
 		tokens_iterator& it,

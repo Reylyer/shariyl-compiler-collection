@@ -63,7 +63,7 @@ namespace algoritmik {
 		};
 		
 		
-		number lt(number n1, number n2) {
+		integer lt(integer n1, integer n2) {
 			return n1 < n2;
 		}
 		
@@ -170,25 +170,9 @@ namespace algoritmik {
 		template<typename R, typename T1>\
 		using name##_expression = generic_expression<name##_op, R, T1>;
 
-		UNARY_EXPRESSION(preinc,
-			++t1->value;
-			return t1;
-		);
-
-		UNARY_EXPRESSION(predec,
-			--t1->value;
-			return t1;
-		);
-
-		UNARY_EXPRESSION(postinc, return t1->value++);
-		
-		UNARY_EXPRESSION(postdec, return t1->value--);
-		
 		UNARY_EXPRESSION(positive, return t1);
 		
 		UNARY_EXPRESSION(negative, return -t1);
-		
-		UNARY_EXPRESSION(bnot, return ~int(t1));
 		
 		UNARY_EXPRESSION(lnot, return !t1);
 		
@@ -739,8 +723,6 @@ namespace algoritmik {
 				CHECK_IDENTIFIER(lnumber);
 				
 				switch (std::get<node_operation>(np->get_value())) {
-					CHECK_UNARY_OPERATION(postinc, lnumber);
-					CHECK_UNARY_OPERATION(postdec, lnumber);
 					CHECK_UNARY_OPERATION(positive, number);
 					CHECK_UNARY_OPERATION(negative, number);
 					CHECK_UNARY_OPERATION(bnot, number);
@@ -752,11 +734,6 @@ namespace algoritmik {
 					CHECK_BINARY_OPERATION(div, number, number);
 					CHECK_BINARY_OPERATION(idiv, number, number);
 					CHECK_BINARY_OPERATION(mod, number, number);
-					CHECK_BINARY_OPERATION(band, number, number);
-					CHECK_BINARY_OPERATION(bor, number, number);
-					CHECK_BINARY_OPERATION(bxor, number, number);
-					CHECK_BINARY_OPERATION(bsl, number, number);
-					CHECK_BINARY_OPERATION(bsr, number, number);
 					CHECK_COMPARISON_OPERATION(eq);
 					CHECK_COMPARISON_OPERATION(ne);
 					CHECK_COMPARISON_OPERATION(lt);
@@ -778,20 +755,6 @@ namespace algoritmik {
 				CHECK_IDENTIFIER(lnumber);
 				
 				switch (std::get<node_operation>(np->get_value())) {
-					CHECK_UNARY_OPERATION(preinc, lnumber);
-					CHECK_UNARY_OPERATION(predec, lnumber);
-					CHECK_BINARY_OPERATION(assign, lnumber, number);
-					CHECK_BINARY_OPERATION(add_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(sub_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(mul_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(div_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(idiv_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(mod_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(band_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(bor_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(bxor_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(bsl_assign, lnumber, number);
-					CHECK_BINARY_OPERATION(bsr_assign, lnumber, number);
 					CHECK_BINARY_OPERATION(comma, void, lnumber);
 					CHECK_INDEX_OPERATION(lnumber, larray);
 					CHECK_TERNARY_OPERATION(ternary, number, lnumber, lnumber);
@@ -811,7 +774,6 @@ namespace algoritmik {
 				
 				switch (std::get<node_operation>(np->get_value())) {
 					CHECK_TO_STRING_OPERATION();
-					CHECK_BINARY_OPERATION(concat, string, string);
 					CHECK_BINARY_OPERATION(comma, void, string);
 					CHECK_INDEX_OPERATION(string, array);
 					CHECK_TERNARY_OPERATION(ternary, number, string, string);
@@ -826,7 +788,6 @@ namespace algoritmik {
 				
 				switch (std::get<node_operation>(np->get_value())) {
 					CHECK_BINARY_OPERATION(assign, lstring, string);
-					CHECK_BINARY_OPERATION(concat_assign, lstring, string);
 					CHECK_BINARY_OPERATION(comma, void, lstring);
 					CHECK_INDEX_OPERATION(lstring, larray);
 					CHECK_TERNARY_OPERATION(ternary, number, lstring, lstring);
@@ -937,6 +898,7 @@ namespace algoritmik {
 				return std::visit([&](const auto& t) {
 					if constexpr(std::is_same_v<decltype(t), const simple_type&>) {
 						switch (t) {
+							// TODO : FUUUCKKK
 							case simple_type::number:
 								if (np->is_lvalue()) {
 									RETURN_EXPRESSION_OF_TYPE(lnumber);
@@ -1001,12 +963,12 @@ namespace algoritmik {
 			return std::visit([&](const auto& t){
 				if constexpr(std::is_same_v<decltype(t), const simple_type&>) {
 					switch (t) {
-						// case simple_type::number:
-						// 	return expression_builder<number>::build_param_expression(np, context);
-						// case simple_type::string:
-						// 	return expression_builder<string>::build_param_expression(np, context);
-						// case simple_type::nothing:
-						// 	throw expression_builder_error();
+						case simple_type::number:
+							return expression_builder<number>::build_param_expression(np, context);
+						case simple_type::string:
+							return expression_builder<string>::build_param_expression(np, context);
+						case simple_type::nothing:
+							throw expression_builder_error();
 					}
 					assert(0);
 					return expression<lvalue>::ptr(); //cannot happen

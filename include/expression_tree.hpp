@@ -11,13 +11,8 @@ namespace algoritmik {
 	enum struct node_operation {
 		param,
 
-		preinc,
-		predec,
-		postinc,
-		postdec,
 		positive,
 		negative,
-		bnot,
 		lnot,
 		size,
 		tostring,
@@ -28,35 +23,23 @@ namespace algoritmik {
 		div,
 		idiv,
 		mod,
-		band,
-		bor,
-		bxor,
-		bsl,
-		bsr,
-		concat,
+
 		assign,
-		add_assign,
-		sub_assign,
-		mul_assign,
-		div_assign,
-		idiv_assign,
-		mod_assign,
-		band_assign,
-		bor_assign,
-		bxor_assign,
-		bsl_assign,
-		bsr_assign,
-		concat_assign,
+
 		eq,
 		ne,
 		lt,
 		gt,
 		le,
 		ge,
+
 		comma,
 		land,
 		lor,
+
 		index,
+
+		traversal,
 		
 		ternary,
 		
@@ -87,12 +70,18 @@ namespace algoritmik {
 		
 		bool is_node_operation() const;
 		bool is_identifier() const;
-		bool is_number() const;
+		bool is_integer() const;
+		bool is_real() const;
+		bool is_character() const;
+		bool is_boolean() const;
 		bool is_string() const;
 		
 		node_operation get_node_operation() const;
 		std::string_view get_identifier() const;
-		double get_number() const;
+		long long get_integer() const;
+		double get_real() const;
+		char get_character() const;
+		bool get_boolean() const;
 		std::string_view get_string() const;
 
 		const std::vector<node_ptr>& get_children() const;

@@ -44,17 +44,12 @@ namespace algoritmik {
 						precedence = operator_precedence::brackets;
 						break;
 					case node_operation::param: // This will never happen. Used only for the node creation.
-					case node_operation::postinc:
-					case node_operation::postdec:
 					case node_operation::index:
 					case node_operation::call:
 						precedence = operator_precedence::postfix;
 						break;
-					case node_operation::preinc:
-					case node_operation::predec:
 					case node_operation::positive:
 					case node_operation::negative:
-					case node_operation::bnot:
 					case node_operation::lnot:
 					case node_operation::size:
 					case node_operation::tostring:
@@ -68,7 +63,6 @@ namespace algoritmik {
 						break;
 					case node_operation::add:
 					case node_operation::sub:
-					case node_operation::concat:
 						precedence = operator_precedence::addition;
 						break;
 					case node_operation::lt:
@@ -306,44 +300,44 @@ namespace algoritmik {
 							++it;
 							if (!it->has_value(reserved_token::close_round)) {
 								while (true) {
-									// bool remove_lvalue = !it->has_value(reserved_token::bitwise_and);
-									// if (!remove_lvalue) {
-									// 	++it;
-									// }
-									// node_ptr argument = parse_expression_tree_impl(context, it, false, false);
-									// if (remove_lvalue) {
-									// 	size_t line_number = argument->get_line_number();
-									// 	size_t char_index = argument->get_char_index();
-									// 	std::vector<node_ptr> argument_vector;
-									// 	argument_vector.push_back(std::move(argument));
-									// 	argument = std::make_unique<node>(
-									// 		context,
-									// 		node_operation::param,
-									// 		std::move(argument_vector),
-									// 		line_number,
-									// 		char_index
-									// 	);
-									// } else if (!argument->is_lvalue()) {
-									// 	throw wrong_type_error(
-									// 		std::to_string(argument->get_type_id()),
-									// 		std::to_string(argument->get_type_id()),
-									// 		true,
-									// 		argument->get_line_number(),
-									// 		argument->get_char_index()
-									// 	);
-									// }
+									bool remove_lvalue = !it->has_value(reserved_token::bitwise_and);
+									if (!remove_lvalue) {
+										++it;
+									}
+									node_ptr argument = parse_expression_tree_impl(context, it, false, false);
+									if (remove_lvalue) {
+										size_t line_number = argument->get_line_number();
+										size_t char_index = argument->get_char_index();
+										std::vector<node_ptr> argument_vector;
+										argument_vector.push_back(std::move(argument));
+										argument = std::make_unique<node>(
+											context,
+											node_operation::param,
+											std::move(argument_vector),
+											line_number,
+											char_index
+										);
+									} else if (!argument->is_lvalue()) {
+										throw wrong_type_error(
+											algoritmik::to_string(argument->get_type_id()),
+											algoritmik::to_string(argument->get_type_id()),
+											true,
+											argument->get_line_number(),
+											argument->get_char_index()
+										);
+									}
 									
-									// operand_stack.push(std::move(argument));
+									operand_stack.push(std::move(argument));
 
-									// ++oi.number_of_operands;
+									++oi.number_of_operands;
 									
-									// if (it->has_value(reserved_token::close_round)) {
-									// 	break;
-									// } else if (it->has_value(reserved_token::comma)) {
-									// 	++it;
-									// } else {
-									// 	throw syntax_error("Expected ',', or closing ')'", it->get_line_number(), it->get_char_index());
-									// }
+									if (it->has_value(reserved_token::close_round)) {
+										break;
+									} else if (it->has_value(reserved_token::comma)) {
+										++it;
+									} else {
+										throw syntax_error("Expected ',', or closing ')'", it->get_line_number(), it->get_char_index());
+									}
 								}
 							}
 							break;
